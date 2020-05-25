@@ -6,17 +6,31 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/express": "^4.17.6",
     "@types/jest": "^24.0.0",
+    "@types/mongodb": "^3.5.18",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/socket.io": "^2.1.8",
+    "@types/socket.io-client": "^1.4.33",
+    "concurrently": "^5.2.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.7",
+    "nodemon": "^2.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "typescript": "~3.7.2"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "ts-node": "^8.10.1",
+    "typescript": "~3.7.2",
+    "wait-on": "^5.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:react": "wait-on -t 10000 tcp:1111 && react-scripts start",
+    "start:server": "wait-on -r -t 300 tcp:1111 && nodemon",
+    "start": "concurrently -k -n server,react -i 'yarn start:server' 'yarn start:react'",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -35,5 +49,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:1111"
 }
