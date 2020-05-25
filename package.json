@@ -31,7 +31,9 @@
     "start:react": "wait-on -t 10000 tcp:1111 && react-scripts start",
     "start:server": "wait-on -r -t 300 tcp:1111 && nodemon",
     "start": "concurrently -k -n server,react -i 'yarn start:server' 'yarn start:react'",
-    "build": "react-scripts build",
+    "build:react":"react-scripts build",
+    "build:server":"tsc -p server/tsconfig.json",
+    "build": "concurrently npm:build:*",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
