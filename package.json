@@ -35,7 +35,7 @@
     "start": "concurrently -k -n server,react -i 'yarn start:server' 'yarn start:react'",
     "build:react": "react-scripts build",
     "build:server": "tsc -p server/tsconfig.json",
-    "build": "concurrently npm:build:*",
+    "build": "yarn build:react && yarn build:server",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
