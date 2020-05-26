@@ -24,6 +24,25 @@
   color: white;
 }
 
+.App-header form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.buzzer {
+  box-shadow:inset 0px 1px 0px 0px #cf866c;
+	background:linear-gradient(to bottom, #d0451b 5%, #bc3315 100%);
+	background-color:#d0451b;
+	border-radius:3px;
+  border:1px solid #942911;
+  width: calc(100% - 40px);
+  flex-grow: 1;
+  margin: 20px;
+  }
+
 .App-link {
   color: #61dafb;
 }
@@ -35,4 +54,23 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.game-grid {
+  display:flex;
+  flex-direction: row;
+  flex-grow: 1;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.game-grid button{
+  flex-grow: 1;
+  max-width: 700px;
+  height: 700px;
+}
+
+.buzz-list {
+  min-width: 600px;
 }
