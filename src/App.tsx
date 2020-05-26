@@ -1,5 +1,4 @@
 import React, { useCallback, ChangeEventHandler, useState, FormEventHandler, EventHandler, MouseEventHandler, useEffect } from 'react';
-import BuzzStat from '../shared/BuzzStat';
 import './App.css';
 import io from 'socket.io-client';
 

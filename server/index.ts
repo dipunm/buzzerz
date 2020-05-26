@@ -3,7 +3,6 @@ import path from 'path';
 import express from 'express';
 import socketio from 'socket.io';
 import moment from 'moment';
-import BuzzStat from '../shared/BuzzStat';
 
 const app = express();
 const server = http.createServer(app);

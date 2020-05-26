@@ -1,4 +1,4 @@
-export default interface BuzzStat {
+interface BuzzStat {
     name: string,
     time: string,
     correct?: boolean
