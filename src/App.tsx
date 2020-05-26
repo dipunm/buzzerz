@@ -38,7 +38,7 @@ function App() {
     socket.emit('buzz');
   }, [socket]);
 
-  const quit = useCallback<MouseEventHandler<HTMLButtonElement>>(e => {
+  const exit = useCallback<MouseEventHandler<HTMLButtonElement>>(e => {
     setInGame(false);
     socket.emit('name', null, () => {
       localStorage.removeItem('name');
@@ -46,41 +46,53 @@ function App() {
     });
   }, [socket]);
 
+  const loginUi = (
+    <form onSubmit={enter}>
+      <h2>
+        <label htmlFor="name">
+          Enter your name:
+        </label>
+      </h2>
+      <input type="text" id="name" value={name} onChange={changeName} />
+      <button type="submit">Begin</button>
+    </form>
+  );
+
+  const gameUi = (
+    <>
+      <button onClick={exit}>exit</button> 
+      <h2>
+        {inGameName}
+      </h2>
+      <div className="game-grid">
+        <button className="buzzer" onClick={buzz}>
+          I know the answer!
+        </button>
+        <div className="buzz-list">
+          <ol>
+            {buzzList.map(({name, time, correct}) => (
+              <li
+                style={{ textDecoration: correct === false ? "line-through" : undefined }} 
+                key={time}>{name}: {time}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </>
+  );
+
+  const adminUi = (
+     null
+  );
+
+  const isAdmin = false
+
+  const contents = isAdmin ? adminUi : inGame ? gameUi : loginUi;
+
   return (
     <div className="App">
       <header className="App-header">
-        {!inGame && (
-          <form onSubmit={enter}>
-            <h2>
-              <label htmlFor="name">
-                Enter your name:
-              </label>
-            </h2>
-            <input type="text" id="name" value={name} onChange={changeName} />
-            <button type="submit">Begin</button>
-          </form>
-        ) || (
-          <>
-            <h2>
-              {inGameName}<br/> 
-              <button onClick={quit}>quit</button>
-            </h2>
-            <div className="game-grid">
-              <div className="buzz-list">
-                <ol>
-                  {buzzList.map(({name, time, correct}) => (
-                    <li
-                      style={{ textDecoration: correct === false ? "line-through" : undefined }} 
-                      key={time}>{name}: {time}</li>
-                  ))}
-                </ol>
-              </div>
-              <button className="buzzer" onClick={buzz}>
-                BUZZ!
-              </button>
-            </div>
-          </>
-        )}
+        {contents}
       </header>
     </div>
   );
