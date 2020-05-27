@@ -3,10 +3,14 @@ import './App.css';
 import io from 'socket.io-client';
 
 const socket = io.connect();
-const onLoadName = localStorage.getItem('name') || "";
-if (onLoadName) {
-  socket.emit('name', onLoadName);
+const initialName = localStorage.getItem('name') || "";
+if (initialName) {
+  socket.emit('name', initialName);
 }
+
+socket.on('connect', () => {
+  socket.emit('name', localStorage.getItem('name') || "");
+});
 
 function useSocketState<T>(eventName: string, initialValue: T): [T, (value: T) => void] {
   const [value, setValue] = useState(initialValue);
@@ -26,9 +30,9 @@ function useSocketState<T>(eventName: string, initialValue: T): [T, (value: T) =
 }
 
 function App() {
-  const [name, setName] = useState(onLoadName);
-  const [submittedName, setSubmittedName] = useState(onLoadName);
-  const [buzzList, setBuzzList] = useState<BuzzStat[]>([]);
+  const [name, setName] = useState(initialName);
+  const [submittedName, setSubmittedName] = useState(initialName);
+  const [buzzList] = useSocketState<BuzzStat[]>('buzzlist', []);
   const [roundNumber, setRoundNumber] = useSocketState('round', 0);
   const [connected, setConnected] = useState(socket.connected);
   const inGame = !!submittedName;
@@ -44,13 +48,6 @@ function App() {
       socket.removeEventListener('disconnect', onDisconnect);
     };
   }, [setConnected]);
-
-  useEffect(() => {
-    socket.on('buzzlist', (buzzlist: BuzzStat[]) => {
-      console.log('hi!');
-      setBuzzList(buzzlist);
-    })
-  }, [socket])
   
   const changeName = useCallback<ChangeEventHandler<HTMLInputElement>>(e => {
     setName(e.target.value);
@@ -118,6 +115,7 @@ function App() {
         <button style={{fontSize: '2em', margin: 5}} onClick={() => setRoundNumber(roundNumber - 1)}>-</button>
         <button style={{fontSize: '2em', margin: 5}} onClick={() => setRoundNumber(roundNumber + 1)}>+</button>
       </div>
+      <button onClick={() => socket.emit('reset')}>reset</button>
       <div className="buzz-list">
         <ol>
           {buzzList.map(({name, time, wrong, active}, i) => (

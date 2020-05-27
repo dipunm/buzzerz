@@ -37,6 +37,14 @@ io.on('connect', socket => {
         io.emit('buzzlist', buzzlists[index]);
     })
 
+    socket.on('reset', () => {
+        buzzlists.splice(0);
+        index = 0;
+        io.emit('round', index);
+        io.emit('buzzlist', buzzlists[index]);
+    })
+
+
     socket.on('name', (name: string, cb: Function) => {
         player.name = name;
         cb && cb(name);
