@@ -1,5 +1,6 @@
 interface BuzzStat {
     name: string,
     time: string,
-    correct?: boolean
+    wrong: boolean,
+    active: boolean,
 }

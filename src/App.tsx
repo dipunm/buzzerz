@@ -8,11 +8,42 @@ if (onLoadName) {
   socket.emit('name', onLoadName);
 }
 
+function useSocketState<T>(eventName: string, initialValue: T): [T, (value: T) => void] {
+  const [value, setValue] = useState(initialValue);
+  useEffect(() => {
+    const handler = (value: T) => {
+      setValue(value);
+    }
+    socket.on(eventName, handler);
+    return () => { socket.removeEventListener(eventName, handler); };
+  }, [eventName, setValue]);
+
+  const setValueProxy = useCallback((value: T) => {
+    socket.emit(eventName, value);
+  }, [eventName, value]);
+
+  return [value, setValueProxy];
+}
+
 function App() {
   const [name, setName] = useState(onLoadName);
-  const [inGame, setInGame] = useState(onLoadName !== "");
-  const [inGameName, setInGameName] = useState(onLoadName);
+  const [submittedName, setSubmittedName] = useState(onLoadName);
   const [buzzList, setBuzzList] = useState<BuzzStat[]>([]);
+  const [roundNumber, setRoundNumber] = useSocketState('round', 0);
+  const [connected, setConnected] = useState(socket.connected);
+  const inGame = !!submittedName;
+  const isAdmin = submittedName === 'admin-dipun-';
+  
+  useEffect(() => {
+    const onConnect = () => setConnected(true);
+    const onDisconnect = () => setConnected(false);
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    return () => {
+      socket.removeEventListener('connect', onConnect);
+      socket.removeEventListener('disconnect', onDisconnect);
+    };
+  }, [setConnected]);
 
   useEffect(() => {
     socket.on('buzzlist', (buzzlist: BuzzStat[]) => {
@@ -28,8 +59,7 @@ function App() {
   const enter = useCallback<FormEventHandler>(e => {
     e.preventDefault();
     socket.emit('name', name, () => {
-      setInGameName(name);
-      setInGame(true);
+      setSubmittedName(name);
       localStorage.setItem('name', name);
     });
   }, [socket, name]);
@@ -39,14 +69,13 @@ function App() {
   }, [socket]);
 
   const exit = useCallback<MouseEventHandler<HTMLButtonElement>>(e => {
-    setInGame(false);
+    setSubmittedName("");
     socket.emit('name', null, () => {
       localStorage.removeItem('name');
-      setInGameName("");
     });
   }, [socket]);
 
-  const loginUi = (
+  const loginUi = () => (
     <form onSubmit={enter}>
       <h2>
         <label htmlFor="name">
@@ -58,11 +87,11 @@ function App() {
     </form>
   );
 
-  const gameUi = (
+  const gameUi = () => (
     <>
       <button onClick={exit}>exit</button> 
       <h2>
-        {inGameName}
+        {submittedName}
       </h2>
       <div className="game-grid">
         <button className="buzzer" onClick={buzz}>
@@ -70,9 +99,9 @@ function App() {
         </button>
         <div className="buzz-list">
           <ol>
-            {buzzList.map(({name, time, correct}) => (
+            {buzzList.map(({name, time, active, wrong}) => (
               <li
-                style={{ textDecoration: correct === false ? "line-through" : undefined }} 
+                className={ active ? 'active' : wrong ? 'wrong' : undefined }
                 key={time}>{name}: {time}</li>
             ))}
           </ol>
@@ -81,16 +110,34 @@ function App() {
     </>
   );
 
-  const adminUi = (
-     null
+  const adminUi = () => (
+    <>
+      <button onClick={exit}>exit</button> 
+      <h1>Round {roundNumber}</h1>
+      <div>
+        <button style={{fontSize: '2em', margin: 5}} onClick={() => setRoundNumber(roundNumber - 1)}>-</button>
+        <button style={{fontSize: '2em', margin: 5}} onClick={() => setRoundNumber(roundNumber + 1)}>+</button>
+      </div>
+      <div className="buzz-list">
+        <ol>
+          {buzzList.map(({name, time, wrong, active}, i) => (
+            <li key={time}
+              className={ active ? 'active' : wrong ? 'wrong' : undefined }>
+                {name}: {time} <button onClick={() => socket.emit('activate', i)}>activate</button>
+            </li>
+            ))}
+        </ol>
+      </div>
+    </>
   );
 
-  const isAdmin = false
-
-  const contents = isAdmin ? adminUi : inGame ? gameUi : loginUi;
+  const contents = isAdmin ? adminUi() : inGame ? gameUi() : loginUi();
 
   return (
     <div className="App">
+      <div className={connected ? 'conn_active' : 'conn_inactive'}>
+        connection: {connected ? "active":"inactive"}
+      </div>
       <header className="App-header">
         {contents}
       </header>

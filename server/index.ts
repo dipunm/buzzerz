@@ -24,6 +24,18 @@ io.on('connect', socket => {
     players[socket.id] = {};
     const player = players[socket.id];
     console.log('connection yay!', socket.id);
+    socket.emit('buzzlist', buzzlists[index]);
+    io.emit('round', index);
+
+    socket.on('round', (n: number) => {
+        if (n < 0) return;
+        if (!buzzlists[n]) {
+            buzzlists[n] = [];
+        }
+        index = n;
+        io.emit('round', index);
+        io.emit('buzzlist', buzzlists[index]);
+    })
 
     socket.on('name', (name: string, cb: Function) => {
         player.name = name;
@@ -33,15 +45,26 @@ io.on('connect', socket => {
     socket.on('buzz', () => {
         console.log('BUZZZ!', player.name);
         if (player.name) {
-            const duplicateIndex = buzzlists[index].findIndex(({name}) => name === player.name);
+            const duplicateIndex = buzzlists[index].findIndex(({name, wrong}) => !wrong && name === player.name);
             if (duplicateIndex === -1) {
                 buzzlists[index].push({
                     name: player.name,
                     time: moment().format("HH:mm:ss.SS"),
+                    wrong: false,
+                    active: false,
                 });
             }
         }
-        socket.emit('buzzlist', buzzlists[index]);
+        io.emit('buzzlist', [...buzzlists[index]]);
+    });
+
+    socket.on('activate', (i: number) => {
+        console.log('activate');
+        buzzlists[index].forEach((player, i2) => {
+            player.active = i2 === i;
+            player.wrong = i2 < i;
+        });
+        io.emit('buzzlist', buzzlists[index]);
     });
 });
 

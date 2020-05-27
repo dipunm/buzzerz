@@ -3,6 +3,7 @@
 }
 
 .App-header {
+  margin-top: 20px;
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -57,12 +58,33 @@
   margin: 5px 0;
 }
 
-.buzz-list li:first-child {
+.buzz-list li.wrong {
+  text-decoration: line-through;
+}
+
+.buzz-list li.active {
   background: #3089f233;
   border: 2px solid #3089f2;
+  text-decoration: none;
   border-radius: 7px;
 }
 
-.buzz-list li:nth-child(2) {
-text-decoration: line-through;
+.conn_active {
+  top: 0;
+  position: fixed;
+  padding: 0 10px;
+  width: 100%;
+  background: greenyellow;
+  text-align: center;
+  height: 20px;
+}
+
+.conn_inactive {
+  top: 0;
+  position: fixed;
+  padding: 0 10px;
+  width: 100%;
+  background: tomato;
+  text-align: center;
+  height: 20px;
 }
