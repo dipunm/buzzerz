@@ -39,6 +39,7 @@ io.on('connect', socket => {
 
     socket.on('reset', () => {
         buzzlists.splice(0);
+        buzzlists.push([]);
         index = 0;
         io.emit('round', index);
         io.emit('buzzlist', buzzlists[index]);
