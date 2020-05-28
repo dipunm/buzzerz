@@ -96,9 +96,9 @@ function App() {
         </button>
         <div className="buzz-list">
           <ol>
-            {buzzList.map(({name, time, active, wrong}) => (
+            {buzzList.map(({name, time, active, wrong, bad}) => (
               <li
-                className={ active ? 'active' : wrong ? 'wrong' : undefined }
+                className={ `${(active ? 'active' : wrong ? 'wrong' : undefined)} ${bad ? 'bad' : ''}` }
                 key={time}>{name}: {time}</li>
             ))}
           </ol>
@@ -118,10 +118,12 @@ function App() {
       <button onClick={() => socket.emit('reset')}>reset</button>
       <div className="buzz-list">
         <ol>
-          {buzzList.map(({name, time, wrong, active}, i) => (
+          {buzzList.map(({name, time, wrong, active, bad}, i) => (
             <li key={time}
-              className={ active ? 'active' : wrong ? 'wrong' : undefined }>
+              className={ `${(active ? 'active' : wrong ? 'wrong' : undefined)} ${bad ? 'bad' : ''}` }>
                 {name}: {time} <button onClick={() => socket.emit('activate', i)}>activate</button>
+                <button onClick={() => socket.emit('bad', i)}>penalty</button>
+
             </li>
             ))}
         </ol>

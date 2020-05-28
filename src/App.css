@@ -1,15 +1,18 @@
 .App {
   text-align: center;
+  height: 100%;
 }
 
 .App-header {
-  margin-top: 20px;
+  position: fixed;
+  width: 100%;
   background-color: #282c34;
-  min-height: 100vh;
+  top: 20px;
+  bottom: 0;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -67,6 +70,10 @@
   border: 2px solid #3089f2;
   text-decoration: none;
   border-radius: 7px;
+}
+
+.buzz-list .bad {
+  color: red;
 }
 
 .conn_active {

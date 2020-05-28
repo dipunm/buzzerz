@@ -3,4 +3,5 @@ interface BuzzStat {
     time: string,
     wrong: boolean,
     active: boolean,
+    bad: boolean,
 }
